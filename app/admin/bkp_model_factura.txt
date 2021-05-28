@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Factura #<?php echo $_GET['id_comanda']; ?></title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+div.container
+{
+	padding: 25px !important;
+}
+div.container header img
+{
+	max-width: 300px;
+}
+div.container header > div:nth-of-type(2)
+{
+	text-align: right;
+	line-height: 20px;
+}
+div.detaliifactura
+{
+	margin-top: 50px;
+	background-color: #ddd;
+}
+div.detaliifactura h4
+{
+	font-weight: bold;
+}
+div.detaliifactura p
+{
+	margin-bottom: 0;
+}
+div.detaliiclient
+{
+	margin-top: 50px;
+}
+div.detaliiclient h5
+{
+	font-weight: bold;
+}
+div.detaliiclient p
+{
+	margin-bottom: 0;
+}
+div.produse
+{
+	margin-top: 50px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+	<header class="row">
+		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+		    <?php
+		    
+		    include 'db.php';
+		    
+		    try {
+                $dbh = new PDO("mysql:host=$hostdb; dbname=$namedb", $userdb, $passdb);
+                
+                $datefirma = $dbh -> query("SELECT * FROM datefirma");
+                foreach($datefirma as $rowdatefirma)
+                {
+                    $logo = $rowdatefirma['logo'];
+                    $nume = $rowdatefirma['nume'];
+                    $adresa = $rowdatefirma['adresa'];
+                    $oras = $rowdatefirma['oras'];
+                    $judet = $rowdatefirma['judet'];
+                    $email = $rowdatefirma['email'];
+                    $cui = $rowdatefirma['cui'];
+                    $rc = $rowdatefirma['rc'];
+                    $cont1 = $rowdatefirma['cont1'];
+                    $cont2 = $rowdatefirma['cont2'];
+                    $cont3 = $rowdatefirma['cont3'];
+                }
+                
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
+		    
+		    if($logo == '')
+		    {
+		        ?>
+		        <img src="placeholder.png" alt="logo place holder"/>  
+		        <?php
+		    }
+		    else
+		    {
+		        ?>
+		        <img src="imgs/<?php echo $logo; ?>" alt="Logo Companie" />
+		        <?php
+		    }
+		    ?>
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<?php echo $nume; ?><br/>
+			<?php echo $adresa; ?></br>
+			<?php echo $cui; ?><br/>
+			<?php echo $rc; ?><br/>
+			<?php echo $email; ?><br/>
+			<?php echo $cont1; ?><br/>
+			<?php echo $cont2; ?><br/>
+			<?php echo $cont3; ?>
+		</div>
+	</header>
+	<div class="row detaliifactura">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<h4>Factura #<?php echo $_GET['id_comanda']; ?></h4>
+			<p>Data emiterii: <?php  date_default_timezone_set("Europe/Bucharest"); echo date("d.m.Y"); ?></p>
+		</div>
+	</div>
+	
+	<div class="row detaliiclient">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<h5>Facturat catre</h5>
+			<?php
+			
+			$id_partener = $_GET['id_partener'];
+			try {
+                $dbh = new PDO("mysql:host=$hostdb; dbname=$namedb", $userdb, $passdb);
+                
+                $partener = $dbh -> query("SELECT * FROM parteneri WHERE ID = '$id_partener'");
+			    foreach($partener as $rowpartener)
+			    {
+			        $numepartener = $rowpartener['nume'];
+			        $emailpartener = $rowpartener['email'];
+			        $adresapartener = $rowpartener['adresa'];
+			        $oraspartener = $rowpartener['oras'];
+			        $judetpartener = $rowpartener['judet'];
+			        $cuipartener = $rowpartener['cui'];
+			        $rcpartener = $rowpartener['rc'];
+			        $telefonpartener = $rowpartener['telefon'];
+			        $cont1partener = $rowpartener['cont1'];
+			        $cont2partener = $rowpartener['cont2'];
+			        $cont3partener = $rowpartener['cont3'];
+			    }
+                
+            }
+            catch(PDOException $e) {
+                echo $e->getMessage();
+            }
+			
+			?>
+			
+			<p><?php echo $numepartener; ?></p>
+			<p><?php echo $adresapartener; ?></p>
+			<p><?php echo $oraspartener; ?></p>
+			<p><?php echo $judetpartener; ?></p>
+			<p><?php echo $cuipartener; ?></p>
+			<p><?php echo $rcpartener; ?></p>
+			<p><?php echo $rcpartener; ?></p>
+			<p><?php echo $telefonpartener; ?></p>
+			<p><?php echo $cont1partener; ?></p>
+			<p><?php echo $cont2partener; ?></p>
+			<p><?php echo $cont3partener; ?></p>
+		</div>
+	</div>
+	
+	<div class="row produse">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Produs</th>
+						<th scope="col">Cantitate</th>
+						<th scope="col">Pret(lei)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					try {
+                        
+                        $dbh = new PDO("mysql:host=$hostdb; dbname=$namedb", $userdb, $passdb);
+                        $id_comanda = $_GET['id_comanda'];
+                        $produse = $dbh -> query("SELECT * FROM produse_comenzi WHERE id_comanda = '$id_comanda'");
+                        $pcrt = 1;
+                        $total = 0;
+                        foreach($produse as $rowproduse)
+                        {
+                            ?>
+                            <tr>
+                                <td><?php echo $pcrt; ?></td>
+                                <td><?php 
+                                
+                                    $id_produs = $rowproduse['id_produs'];
+                                    $dateprodus = $dbh -> query("SELECT * FROM produse WHERE ID = '$id_produs'");
+                                    foreach($dateprodus as $rowdateprodus)
+                                    {
+                                        echo $rowdateprodus['nume'];
+                                    }
+                                    ?>
+                                    </td>
+                                <td><?php echo $rowproduse['cantitate']; ?></td>
+                                <td><?php echo $rowdateprodus['pret']*$rowproduse['cantitate']; ?></td>
+                            </tr>
+                            <?php
+                            $total = $total + $rowdateprodus['pret']*$rowproduse['cantitate'];
+                        }
+                        
+                    }
+                    catch(PDOException $e) {
+                        echo $e->getMessage();
+                    }
+					?>
+					<tr>
+					    <td></td>
+					    <td></td>
+					    <td><strong>TOTAL DE PLATA</strong></td>
+					    <td><strong><?php echo $total; ?></strong></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+<?php
+try {
+  $dbh = new PDO("mysql:host=$hostdb; dbname=$namedb", $userdb, $passdb);
+  
+  $iadate = $dbh -> query("SELECT * FROM comenzi WHERE ID = '$id_comanda'");
+  foreach($iadate as $rowiadate)
+  {
+      $partener_comanda = $rowiadate['partener'];
+      $factura_comanda = $rowiadate['factura'];
+  }
+  
+  $produsecomanda = $dbh -> query("SELECT * FROM produse_comenzi WHERE id_comanda = '$id_comanda'");
+  $total_factura = 0;
+  foreach($produsecomanda as $rowprodusecomanda)
+  {
+      $id_produs_comanda = $rowprodusecomanda['id_produs'];
+      $cantitate_produs_comanda = $rowprodusecomanda['cantitate'];
+      $pret_produs_comanda = $dbh -> query("SELECT * FROM produse WHERE ID = '$id_produs_comanda'");
+      foreach($pret_produs_comanda as $rowpret_produs_comanda)
+      {
+          $pret_produs = $rowpret_produs_comanda['pret'];
+          $total_factura = $total_factura + $cantitate_produs_comanda * $pret_produs;
+      }
+  }
+  date_default_timezone_set("Europe/Bucharest");
+  $data_ora = strtotime(date("d.m.Y H:i:s"));
+  $dbh -> exec("INSERT INTO facturi_chitante(id_comanda , partener , chitanta_factura , data_ora , incasat , platit) VALUES('$id_comanda' , '$partener_comanda' , '$factura_comanda' , '$data_ora' , '$total' , '0')");
+}
+catch(PDOException $e) {
+  echo $e->getMessage();
+}
+?>

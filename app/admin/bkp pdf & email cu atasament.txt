@@ -1,0 +1,50 @@
+require_once "pdf/dompdf/autoload.inc.php";
+
+use Dompdf\Dompdf;
+
+$dompdf = new Dompdf();
+
+$html = file_get_contents("http://app.medicalpubit.ro/pdf.php?id_comanda=".$id_comanda."&id_partener=".$id_partener);
+
+$dompdf -> loadHtml($html);
+
+$dompdf -> setPaper('A4' , 'portrait');
+
+$dompdf -> render();
+
+
+$dompdf -> stream("Factura #".$id_comanda, array("Attachment" => 0));
+
+$output = $dompdf->output();
+
+file_put_contents("docs/".$nume_factura, $output);
+
+ini_set("include_path", '/home2/medical/php:' . ini_get("include_path") );
+
+include('Mail.php');
+include('Mail/mime.php');
+
+$text = 'Text version of email';
+$html = 'Buna ziua,<br/>
+In atasament regasiti factura aferenta produselor cumparate.<br/>
+Va multumim pentru cumparaturi!';
+$file = 'docs/'.$nume_factura;
+ date_default_timezone_set("Europe/Bucharest");
+$hdrs = array(
+              'From'    => 'Conta<conta@conta.ro>',
+              'To'      => $emailpartener,
+              'Subject' => 'Factura #'.$id_comanda.'/'.date("d.m.Y")
+              );
+
+$mime = new Mail_mime();
+
+$mime->setTXTBody($text);
+$mime->setHTMLBody($html);
+
+$mime->addAttachment($file,'application/octet-stream');
+
+$body = $mime->get();
+$hdrs = $mime->headers($hdrs);
+
+$mail =& Mail::factory('mail', $params);
+$mail->send('alex@bistrita-webdesign.ro', $hdrs, $body); 
